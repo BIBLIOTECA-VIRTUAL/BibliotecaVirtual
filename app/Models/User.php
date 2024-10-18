@@ -40,5 +40,14 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+    
+public function emprestimos(): hasMany
+{
+    return $this->hasMany(Emprestimo::class, 'usuario_id');
 }
 
+public function setPasswordAttribute(string $value): void{
+    $this -> attributes['password'] = bcrypt($value);
+}
+
+}

@@ -7,25 +7,33 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * Executa as migrações.
      */
     public function up(): void
     {
         Schema::create('livros', function (Blueprint $table) {
             $table->id();
             $table->string('titulo');
-            $table->integer('autor_id')->unsigned();
-            $table->integer('genero_id')->unsigned();
+            $table->string('isbn')->unique()->nullable();
+            $table->text('descricao')->nullable();
+            $table->year('ano_publicacao')->nullable();
+            $table->foreignId('autor_id')->constrained('autores')->onDelete('cascade');
+            $table->foreignId('genero_id')->constrained('generos')->onDelete('cascade');
             $table->boolean('disponibilidade')->default(true);
+            // Unsigned integer para evitar ter valores negativos na quantidade de livros
+            $table->unsignedInteger('quantidade_total')->default(1);
+            $table->unsignedInteger('quantidade_disponivel')->default(1);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
     /**
-     * Reverse the migrations.
+     * Reverte as migrações.
      */
     public function down(): void
     {
         Schema::dropIfExists('livros');
     }
 };
+
