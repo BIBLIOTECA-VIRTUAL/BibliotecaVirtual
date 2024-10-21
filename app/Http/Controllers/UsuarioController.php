@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\UsuarioRequest; // Presumindo que há uma classe de requisição para validação
+use App\Http\Requests\UsuarioRequest;
 use App\Http\Resources\UsuarioResource;
 use App\Models\Usuario;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class UsuarioController extends Controller
@@ -15,7 +14,6 @@ class UsuarioController extends Controller
         return UsuarioResource::collection(Usuario::all());
     }
 
-    
     public function store(UsuarioRequest $request)
     {
         $usuario = Usuario::create([
@@ -25,36 +23,22 @@ class UsuarioController extends Controller
             'perfil_id' => $request->perfil_id,
         ]);
 
-        $resource = new UsuarioResource($usuario);
-        return $resource->response()->setStatusCode(201); 
+        return (new UsuarioResource($usuario))->response()->setStatusCode(201);
     }
 
     public function update(UsuarioRequest $request, string $id)
     {
-        $usuario = Usuario::find($id);
+        $usuario = Usuario::findOrFail($id);
+        $usuario->update($request->only(['nome', 'email']));
 
-        if (!$usuario) {
-            return response(['error' => 'Usuário não encontrado.'], 404);
-        }
-
-        $usuario->update([
-            'nome' => $request->nome,
-            'email' => $request->email,
-        ]);
-
-        $resource = new UsuarioResource($usuario);
-        return $resource->response()->setStatusCode(200); 
+        return (new UsuarioResource($usuario))->response()->setStatusCode(200);
     }
 
     public function destroy(string $id)
     {
-        $usuario = Usuario::find($id);
-
-        if (!$usuario) {
-            return response(['error' => 'Usuário não encontrado.'], 404);
-        }
-
+        $usuario = Usuario::findOrFail($id);
         $usuario->delete();
-        return response(['message' => 'Usuário deletado com sucesso.'], 200);
+
+        return response()->json(['mensagem' => 'Usuário deletado com sucesso.'], 200);
     }
 }

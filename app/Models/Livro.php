@@ -21,14 +21,14 @@ class Livro extends Model
         'genero_id',
         'disponibilidade',
         'quantidade_total',
-        'quantidade_disponivel'
+        'quantidade_disponivel',
     ];
 
     protected $casts = [
         'disponibilidade' => 'boolean',
         'ano_publicacao' => 'integer',
         'quantidade_total' => 'integer',
-        'quantidade_disponivel' => 'integer'
+        'quantidade_disponivel' => 'integer',
     ];
 
     public function autor()
@@ -67,19 +67,24 @@ class Livro extends Model
         if (!$this->estaDisponivel()) {
             return false;
         }
-        
-        $this->quantidade_disponivel--;
-        $this->atualizarDisponibilidade();
+
+        \DB::transaction(function () {
+            $this->quantidade_disponivel--;
+            $this->atualizarDisponibilidade();
+        });
+
         return true;
     }
 
     public function devolverLivro()
     {
-        if ($this->quantidade_disponivel < $this->quantidade_total) {
-            $this->quantidade_disponivel++;
-            $this->atualizarDisponibilidade();
-            return true;
-        }
-        return false;
+        \DB::transaction(function () {
+            if ($this->quantidade_disponivel < $this->quantidade_total) {
+                $this->quantidade_disponivel++;
+                $this->atualizarDisponibilidade();
+            }
+        });
+
+        return true;
     }
 }
