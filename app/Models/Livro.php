@@ -17,8 +17,8 @@ class Livro extends Model
         'isbn',
         'descricao',
         'ano_publicacao',
-        'autor_id',
-        'genero_id',
+        'autor',
+        'genero',
         'disponibilidade',
         'quantidade_total',
         'quantidade_disponivel',
@@ -30,16 +30,6 @@ class Livro extends Model
         'quantidade_total' => 'integer',
         'quantidade_disponivel' => 'integer',
     ];
-
-    public function autor()
-    {
-        return $this->belongsTo(Autor::class, 'autor_id');
-    }
-
-    public function genero()
-    {
-        return $this->belongsTo(Genero::class, 'genero_id');
-    }
 
     public function emprestimos()
     {

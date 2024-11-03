@@ -13,8 +13,8 @@ class LivroController extends Controller {
     public function store(Request $request) {
         $validated = $request->validate([
             'titulo' => 'required|string',
-            'autor_id' => 'required|integer',
-            'genero_id' => 'required|integer',
+            'autor' => 'required|string',
+            'genero' => 'required|string',
         ]);
         
         $livro = Livro::create($validated);
@@ -36,4 +36,6 @@ class LivroController extends Controller {
         $livro->delete();
         return response()->json(['mensagem' => 'Livro deletado com sucesso.'], 200);
     }
+
+    
 }

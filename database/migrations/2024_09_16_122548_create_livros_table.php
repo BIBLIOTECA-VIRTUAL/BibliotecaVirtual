@@ -17,8 +17,8 @@ return new class extends Migration
             $table->string('isbn')->unique()->nullable();
             $table->text('descricao')->nullable();
             $table->year('ano_publicacao')->nullable();
-            $table->foreignId('autor_id')->constrained('autores')->onDelete('cascade');
-            $table->foreignId('genero_id')->constrained('generos')->onDelete('cascade');
+            $table->string('autor');
+            $table->string('genero');
             $table->boolean('disponibilidade')->default(true);
             // Unsigned integer para evitar ter valores negativos na quantidade de livros
             $table->unsignedInteger('quantidade_total')->default(1);
