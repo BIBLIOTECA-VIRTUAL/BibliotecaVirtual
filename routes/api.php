@@ -2,6 +2,7 @@
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\LivroController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
 
 
 
