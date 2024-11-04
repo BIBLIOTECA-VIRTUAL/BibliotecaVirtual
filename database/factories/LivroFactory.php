@@ -17,7 +17,7 @@ class LivroFactory extends Factory
             'descricao' => $this->faker->paragraph, // Gera um parágrafo como descrição
             'ano_publicacao' => $this->faker->year, // Ano aleatório
             'autor' => fake()->name(),
-            'generos' => $this->faker->randomElement([
+            'genero' => $this->faker->randomElement([
                                             'Ficção Científica',
                                             'Romance',
                                             'Terror',
