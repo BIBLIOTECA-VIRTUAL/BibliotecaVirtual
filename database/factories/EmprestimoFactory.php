@@ -17,14 +17,15 @@ class EmprestimoFactory extends Factory
      * @return array<string, mixed>
      */
     public function definition(): array
-    {
-        return [
-            'livro_id' => Livro::factory(), // Cria um livro associado
-            'usuario_id' => User::factory(), // Cria um usuário associado
-            'data_emprestimo' => $this->faker->dateTimeBetween('-1 month', 'now'), // Data aleatória no último mês
-            'data_devolucao' => null, // Devolução inicialmente nula para empréstimos ativos
-        ];
-    }
+{
+    return [
+        'livro_id' => Livro::factory(), // Cria um livro associado
+        'usuario_id' => User::factory(), // Cria um usuário associado
+        'data_emprestimo' => $this->faker->dateTimeBetween('-1 month', 'now'), // Data aleatória no último mês
+        'data_devolucao_prevista' => $this->faker->dateTimeBetween('+2 months', '+7 months'), // Devolução prevista
+    ];
+}
+
 
     /**
      * Define um estado para empréstimos já devolvidos.
