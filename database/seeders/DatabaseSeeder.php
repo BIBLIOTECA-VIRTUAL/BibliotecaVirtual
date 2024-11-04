@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use App\Models\Livro;
+use App\Models\Emprestimo;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder

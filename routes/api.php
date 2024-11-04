@@ -16,17 +16,24 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Route::middleware(['auth:sanctum'])->group(function () {
-    Route::prefix('usuarios')->group(function () {
+    Route::prefix('usuarios')->middleware('can:admin')->group(function () {
         Route::get('/', [UsuarioController::class, 'index']);
         Route::post('/', [UsuarioController::class, 'store']);
         Route::put('/{id}', [UsuarioController::class, 'update']);
         Route::delete('/{id}', [UsuarioController::class, 'destroy']);
     });
 
-    Route::prefix('livros')->group(function () {
+    Route::prefix('livros')->middleware('can:librarian')->group(function () {
         Route::get('/', [LivroController::class, 'index']);
         Route::post('/', [LivroController::class, 'store']);
         Route::put('/{id}', [LivroController::class, 'update']);
         Route::delete('/{id}', [LivroController::class, 'destroy']);
+    });
+
+    Route::prefix('emprestimo')->middleware('can:person')->group(function() {
+        Route::get('/', [EmprestimoController::class, 'index']);
+        Route::post('/', [EmprestimoController::class, 'store']);
+        Route::put('/{id}/devolver', [EmprestimoController::class, 'devolver']);
+        Route::delete('/{id}', [EmprestimoController::class, 'destroy']);
     });
 });
