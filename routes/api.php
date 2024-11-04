@@ -1,40 +1,71 @@
 <?php
+
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\LivroController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\EmprestimoController;
 use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Route;
 
-
-
-Route::match(['get', 'post'], uri: '/login', action: [UserController::class, 'login'])->name('login');
-Route::post('/register', action: [UserController::class, 'register'])->name('register');
-Route::middleware('auth:sanctum')->group(function () {
-    Route::prefix('profile')->group(function () {
-        Route::get('/', action: [UserController::class, 'profile'])->name('profile');
-        Route::put('/edit', action: [UserController::class, 'editProfile'])->name('edit-profile');
-    });
-    Route::get('/logout', action: [UserController::class, 'logout'])->name('logout');
+// Rotas públicas
+Route::prefix('auth')->group(function () {
+    Route::post('/login', [UserController::class, 'login'])->name('auth.login');
+    Route::post('/register', [UserController::class, 'register'])->name('auth.register');
 });
 
-Route::middleware(['auth:sanctum'])->group(function () {
-    Route::prefix('usuarios')->middleware('can:admin')->group(function () {
-        Route::get('/', [UsuarioController::class, 'index']);
-        Route::post('/', [UsuarioController::class, 'store']);
-        Route::put('/{id}', [UsuarioController::class, 'update']);
-        Route::delete('/{id}', [UsuarioController::class, 'destroy']);
+// Rotas protegidas
+Route::middleware('auth:sanctum')->group(function () {
+    // Autenticação
+    Route::post('/logout', [UserController::class, 'logout'])->name('auth.logout');
+    
+    // Perfil do usuário
+    Route::prefix('profile')->group(function () {
+        Route::get('/', [UserController::class, 'profile'])->name('profile.show');
+        Route::put('/', [UserController::class, 'editProfile'])->name('profile.update');
+    });
+    
+    // Rotas de Administrador
+    Route::prefix('admin')->middleware('role:admin')->group(function () {
+        Route::apiResource('usuarios', UserController::class)->except('show')->names([
+            'index' => 'admin.usuarios.index',
+            'store' => 'admin.usuarios.store',
+            'update' => 'admin.usuarios.update',
+            'destroy' => 'admin.usuarios.destroy'
+        ]);
+    });
+    
+    // Rotas de Bibliotecário
+    Route::prefix('biblioteca')->middleware('role:librarian')->group(function () {
+        Route::apiResource('livros', LivroController::class)->names([
+            'index' => 'biblioteca.livros.index',
+            'store' => 'biblioteca.livros.store',
+            'show' => 'biblioteca.livros.show',
+            'update' => 'biblioteca.livros.update',
+            'destroy' => 'biblioteca.livros.destroy'
+        ]);
+    });
+    
+    // Rotas de Usuário
+    Route::prefix('emprestimos')->middleware('role:user')->group(function () {
+        Route::get('/', [EmprestimoController::class, 'index'])->name('emprestimos.index');
+        Route::post('/', [EmprestimoController::class, 'store'])->name('emprestimos.store');
+        Route::put('/{emprestimo}/devolver', [EmprestimoController::class, 'devolver'])
+            ->name('emprestimos.devolver');
+        Route::delete('/{emprestimo}', [EmprestimoController::class, 'destroy'])
+            ->name('emprestimos.destroy');
     });
 
-    Route::prefix('livros')->middleware('can:librarian')->group(function () {
-        Route::get('/', [LivroController::class, 'index']);
-        Route::post('/', [LivroController::class, 'store']);
-        Route::put('/{id}', [LivroController::class, 'update']);
-        Route::delete('/{id}', [LivroController::class, 'destroy']);
+    // Rotas públicas autenticadas (qualquer usuário logado)
+    Route::prefix('livros')->group(function () {
+        Route::get('/', [LivroController::class, 'index'])->name('livros.index');
+        Route::get('/{livro}', [LivroController::class, 'show'])->name('livros.show');
     });
+});
 
-    Route::prefix('emprestimo')->middleware('can:person')->group(function() {
-        Route::get('/', [EmprestimoController::class, 'index']);
-        Route::post('/', [EmprestimoController::class, 'store']);
-        Route::put('/{id}/devolver', [EmprestimoController::class, 'devolver']);
-        Route::delete('/{id}', [EmprestimoController::class, 'destroy']);
-    });
+// Fallback para rotas não encontradas
+Route::fallback(function() {
+    return response()->json([
+        'message' => 'Rota não encontrada.',
+        'error' => 'Not Found',
+        'status_code' => 404
+    ], 404);
 });

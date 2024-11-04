@@ -7,25 +7,46 @@ use App\Models\Livro;
 use App\Models\Emprestimo;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // Cria 10 usuários aleatórios
-        // User::factory(10)->create();
-
-        // Cria um usuário específico
-        User::factory()->create([
-            'name' => 'Test User',
-            'password' => bcrypt('admin'),
-            'email' => 'test@example.com',
+        // Limpar tabelas existentes
+        DB::table('users')->truncate();
+        
+        // Criar usuário admin
+        User::create([
+            'name' => 'Administrador',
+            'email' => 'admin@example.com',
+            'password' => Hash::make('admin123'),
+            'perfil_id' => 2,
+            'date_birthday' => '1990-01-01',
+            'gender' => 'M'
         ]);
 
-        // Cria 50 livros com dados aleatórios
+        // Criar bibliotecário
+        User::create([
+            'name' => 'Bibliotecário',
+            'email' => 'bibliotecario@example.com',
+            'password' => Hash::make('123456'),
+            'perfil_id' => 1,
+            'date_birthday' => '1990-01-01',
+            'gender' => 'M'
+        ]);
+
+        // Criar usuário comum
+        User::create([
+            'name' => 'Test User',
+            'email' => 'test@example.com',
+            'password' => Hash::make('123456'),
+            'perfil_id' => 0,
+            'date_birthday' => '1990-01-01',
+            'gender' => 'M'
+        ]);
+
+        // Criar dados de teste
         Livro::factory(50)->create();
         Emprestimo::factory(50)->create();
     }
