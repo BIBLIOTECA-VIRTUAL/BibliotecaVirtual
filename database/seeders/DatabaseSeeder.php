@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Livro;
 use App\Models\Emprestimo;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -15,11 +16,12 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Cria 10 usuários aleatórios
-        User::factory(10)->create();
+        // User::factory(10)->create();
 
         // Cria um usuário específico
         User::factory()->create([
             'name' => 'Test User',
+            'password' => bcrypt('admin'),
             'email' => 'test@example.com',
         ]);
 

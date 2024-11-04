@@ -22,7 +22,7 @@ class UserController extends Controller
        $usuario = Usuario::create([
            'nome' => $request->nome,
            'email' => $request->email,
-           'senha' => Hash::make($request->senha),
+           'senha' => bcrypt($request->senha),
            'perfil_id' => $request->perfil_id,
        ]);
 
@@ -46,8 +46,13 @@ class UserController extends Controller
    }
 
    public function login(Request $request)
-   {
-       if (Auth::attempt($request->only('email', 'password'))) {
+   { 
+    $credentials = [
+        'email' => $request->email,
+        'password' => $request->senha,
+    ];
+       
+       if (Auth::attempt($credentials)) {
            return response()->json([
                "data" => [
                    "message" => "Authorized",
