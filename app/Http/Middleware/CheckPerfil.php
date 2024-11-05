@@ -1,8 +1,8 @@
 <?php
 
-// App/Http/Middleware/CheckPerfil.php
 namespace App\Http\Middleware;
 
+use App\Enums\PerfilEnum;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,9 +16,9 @@ class CheckPerfil
         }
 
         $perfilMinimo = match ($role) {
-            'admin' => PERFIL_ADMIN,
-            'librarian' => PERFIL_BIBLIOTECARIO,
-            'user' => PERFIL_PESSOA,
+            'admin' => PerfilEnum::ADMIN,
+            'librarian' => PerfilEnum::LIBRARIAN,
+            'user' => PerfilEnum::USER,
             default => null,
         };
 

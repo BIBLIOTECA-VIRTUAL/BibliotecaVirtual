@@ -24,9 +24,9 @@ class UserController extends Controller
     {
         try {
             $this->authorize('viewAny', User::class);
-            
+
             $usuarios = User::orderBy('created_at', 'desc')->get();
-            
+
             return response()->json([
                 'status' => 'success',
                 'data' => UserResource::collection($usuarios)
@@ -48,7 +48,7 @@ class UserController extends Controller
     {
         try {
             $this->authorize('create', User::class);
-            
+
             $usuario = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
@@ -88,7 +88,7 @@ class UserController extends Controller
                 'date_birthday' => $request->date_birthday,
                 'gender' => $request->gender
             ];
-            
+
             if ($request->filled('password')) {
                 $updateData['password'] = Hash::make($request->password);
             }
@@ -145,73 +145,23 @@ class UserController extends Controller
      */
     public function login(Request $request)
 {
-    try {
-        // Validação dos campos
-        $validated = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required', 'string'],
-        ], [
-            'email.required' => 'O campo email é obrigatório',
-            'email.email' => 'Digite um email válido',
-            'password.required' => 'O campo senha é obrigatório'
-        ]);
-
-        // Log da tentativa de login
-        Log::info('Tentativa de login para email: ' . $request->email);
-
-        // Verifica se o usuário existe
-        $user = User::where('email', $request->email)->first();
-        
-        // Debug para verificar os dados
-        Log::debug('Dados da requisição:', [
-            'email' => $request->email,
-            'password_provided' => !empty($request->password),
-            'user_exists' => !is_null($user),
-            'password_matches' => $user ? Hash::check($request->password, $user->password) : false
-        ]);
-
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            Log::info('Credenciais inválidas para o email: ' . $request->email);
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Credenciais inválidas',
-                'errors' => ['email' => ['Email ou senha incorretos']]
-            ], 401);
-        }
-
-        // Revoga tokens anteriores
-        $user->tokens()->delete();
-
-        // Cria novo token
-        $token = $user->createToken('auth-token')->plainTextToken;
-
-        Log::info('Login bem-sucedido para usuário: ' . $user->id);
-
+    if (Auth::attempt($request->only('email', 'password'))) {
         return response()->json([
-            'status' => 'success',
-            'message' => 'Login realizado com sucesso',
-            'data' => [
-                'user' => new UserResource($user),
-                'token' => $token,
-                'token_type' => 'Bearer',
-                'perfil_id' => $user->perfil_id
+            "data" => [
+                "message" => "Authorized",
+                "token" => $request->user()->createToken('login')->plainTextToken
             ]
-        ]);
-    } catch (ValidationException $e) {
-        Log::error('Erro de validação no login: ' . json_encode($e->errors()));
-        return response()->json([
-            'status' => 'error',
-            'message' => 'Erro de validação',
-            'errors' => $e->errors()
-        ], 422);
-    } catch (\Exception $e) {
-        Log::error('Erro no login: ' . $e->getMessage());
-        return response()->json([
-            'status' => 'error',
-            'message' => 'Erro ao realizar login',
-            'error' => $e->getMessage()
-        ], 500);
+        ], 200);
     }
+
+    return response()->json(
+        [
+            "errors" => [
+                'message' => 'Not Authorized'
+            ],
+        ],
+        403
+    );
 }
 
     /**
@@ -221,7 +171,7 @@ class UserController extends Controller
     {
         try {
             auth()->user()->tokens()->delete();
-            
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Logout realizado com sucesso'
@@ -280,7 +230,7 @@ class UserController extends Controller
     {
         try {
             $user = auth()->user();
-            
+
             return response()->json([
                 'status' => 'success',
                 'data' => new UserResource($user)
@@ -302,13 +252,13 @@ class UserController extends Controller
     {
         try {
             $user = auth()->user();
-            
+
             $updateData = [
                 'name' => $request->name,
                 'date_birthday' => $request->date_birthday,
                 'gender' => $request->gender
             ];
-            
+
             if ($request->filled('password')) {
                 $updateData['password'] = Hash::make($request->password);
                 $user->tokens()->delete(); // Revoga tokens ao mudar senha

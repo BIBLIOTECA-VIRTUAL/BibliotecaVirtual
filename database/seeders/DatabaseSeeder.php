@@ -15,32 +15,32 @@ class DatabaseSeeder extends Seeder
     {
         // Limpar tabelas existentes
         DB::table('users')->truncate();
-        
+
         // Criar usuário admin
-        User::create([
+        User::factory()->create([
             'name' => 'Administrador',
             'email' => 'admin@example.com',
-            'password' => Hash::make('admin123'),
+            'password' => bcrypt('admin123'),
             'perfil_id' => 2,
             'date_birthday' => '1990-01-01',
             'gender' => 'M'
         ]);
 
         // Criar bibliotecário
-        User::create([
+        User::factory()->create([
             'name' => 'Bibliotecário',
             'email' => 'bibliotecario@example.com',
-            'password' => Hash::make('123456'),
+            'password' => bcrypt('123456'),
             'perfil_id' => 1,
             'date_birthday' => '1990-01-01',
             'gender' => 'M'
         ]);
 
         // Criar usuário comum
-        User::create([
+        User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
-            'password' => Hash::make('123456'),
+            'password' => bcrypt('123456'),
             'perfil_id' => 0,
             'date_birthday' => '1990-01-01',
             'gender' => 'M'

@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasApiTokens;
 
     protected $fillable = [
         'name',
@@ -30,10 +31,5 @@ class User extends Authenticatable
     public function emprestimos()
     {
         return $this->hasMany(Emprestimo::class, 'usuario_id');
-    }
-
-    public function setPasswordAttribute(string $value): void
-    {
-        $this->attributes['password'] = Hash::make($value);
     }
 }

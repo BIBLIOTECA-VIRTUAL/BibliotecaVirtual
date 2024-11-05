@@ -30,7 +30,7 @@ class UserFactory extends Factory
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'password' => static::$password ??= bcrypt('password'), // Senha padrão hashada
+            'password' => bcrypt('admin'),
             'remember_token' => Str::random(10),
             'perfil_id' => $this->faker->numberBetween(0, 2),
         ];

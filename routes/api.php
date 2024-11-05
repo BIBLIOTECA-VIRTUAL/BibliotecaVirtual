@@ -16,15 +16,15 @@ Route::prefix('auth')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     // Autenticação
     Route::post('/logout', [UserController::class, 'logout'])->name('auth.logout');
-    
+
     // Perfil do usuário
     Route::prefix('profile')->group(function () {
         Route::get('/', [UserController::class, 'profile'])->name('profile.show');
         Route::put('/', [UserController::class, 'editProfile'])->name('profile.update');
     });
-    
+
     // Rotas de Administrador
-    Route::prefix('admin')->middleware('role:admin')->group(function () {
+    Route::prefix('admin')->middleware('check_perfil:admin')->group(function () {
         Route::apiResource('usuarios', UserController::class)->except('show')->names([
             'index' => 'admin.usuarios.index',
             'store' => 'admin.usuarios.store',
@@ -32,9 +32,9 @@ Route::middleware('auth:sanctum')->group(function () {
             'destroy' => 'admin.usuarios.destroy'
         ]);
     });
-    
+
     // Rotas de Bibliotecário
-    Route::prefix('biblioteca')->middleware('role:librarian')->group(function () {
+    Route::prefix('biblioteca')->middleware('check_perfil:librarian')->group(function () {
         Route::apiResource('livros', LivroController::class)->names([
             'index' => 'biblioteca.livros.index',
             'store' => 'biblioteca.livros.store',
@@ -43,9 +43,9 @@ Route::middleware('auth:sanctum')->group(function () {
             'destroy' => 'biblioteca.livros.destroy'
         ]);
     });
-    
+
     // Rotas de Usuário
-    Route::prefix('emprestimos')->middleware('role:user')->group(function () {
+    Route::prefix('emprestimos')->middleware('check_perfil:user')->group(function () {
         Route::get('/', [EmprestimoController::class, 'index'])->name('emprestimos.index');
         Route::post('/', [EmprestimoController::class, 'store'])->name('emprestimos.store');
         Route::put('/{emprestimo}/devolver', [EmprestimoController::class, 'devolver'])
