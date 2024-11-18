@@ -23,13 +23,13 @@ class UserController extends Controller
     public function index()
     {
         try {
-            $this->authorize('viewAny', User::class);
+            // $this->authorize('viewAny', User::class);
 
             $usuarios = User::orderBy('created_at', 'desc')->get();
 
             return response()->json([
                 'status' => 'success',
-                'data' => UserResource::collection($usuarios)
+                'data' => ($usuarios)
             ]);
         } catch (\Exception $e) {
             Log::error('Erro ao listar usuários: ' . $e->getMessage());

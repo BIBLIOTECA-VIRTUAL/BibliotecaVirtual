@@ -10,12 +10,12 @@ use Illuminate\Support\Facades\Gate;
 class AuthServiceProvider extends ServiceProvider
 {
     protected $policies = [
-        User::class => UsuarioPolicy::class,
+        // User::class => UsuarioPolicy::class,
     ];
 
     public function boot()
     {
-        $this->registerPolicies();
+        // $this->registerPolicies();
 
         // Define constantes para os tipos de perfil
         define('PERFIL_PESSOA', 0);

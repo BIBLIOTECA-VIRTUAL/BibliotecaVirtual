@@ -24,13 +24,14 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     // Rotas de Administrador
-    Route::prefix('admin')->middleware('check_perfil:admin')->group(function () {
-        Route::apiResource('usuarios', UserController::class)->except('show')->names([
-            'index' => 'admin.usuarios.index',
-            'store' => 'admin.usuarios.store',
-            'update' => 'admin.usuarios.update',
-            'destroy' => 'admin.usuarios.destroy'
-        ]);
+    Route::prefix('admin')->middleware('can:admin')->group(function () {
+        Route::apiResource('usuarios', UserController::class);
+        // ->except('show')->names([
+        //     'index' => 'admin.usuarios.index',
+        //     'store' => 'admin.usuarios.store',
+        //     'update' => 'admin.usuarios.update',
+        //     'destroy' => 'admin.usuarios.destroy'
+        // ]);
     });
 
     // Rotas de Bibliotecário
@@ -62,10 +63,10 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 // Fallback para rotas não encontradas
-Route::fallback(function() {
-    return response()->json([
-        'message' => 'Rota não encontrada.',
-        'error' => 'Not Found',
-        'status_code' => 404
-    ], 404);
-});
+// Route::fallback(function() {
+//     return response()->json([
+//         'message' => 'Rota não encontrada.',
+//         'error' => 'Not Found',
+//         'status_code' => 404
+//     ], 404);
+// });
